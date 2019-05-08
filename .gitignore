@@ -1,1 +1,4 @@
 .idea/
+
+bin/fluent-bit
+bin/out_loggregator.so
