@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	client *loggregator.IngressClient
+	client   *loggregator.IngressClient
+	sourceId string
 )
 
 //export FLBPluginRegister
@@ -30,6 +31,7 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
 	key := output.FLBPluginConfigKey(ctx, "key")
 	ca := output.FLBPluginConfigKey(ctx, "ca")
 	addr := output.FLBPluginConfigKey(ctx, "addr")
+	sourceId = output.FLBPluginConfigKey(ctx, "source_id")
 
 	tlsConfig, err := loggregator.NewIngressTLSConfig(
 		ca,
@@ -85,7 +87,7 @@ func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
 		for _, v := range record {
 			message := v.([]byte)
 			e := &loggregator_v2.Envelope{
-				SourceId:  "experimental-plugin",
+				SourceId:  sourceId,
 				Timestamp: timestamp.Unix(),
 				Message: &loggregator_v2.Envelope_Log{
 					Log: &loggregator_v2.Log{

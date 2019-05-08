@@ -9,8 +9,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
 RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/
 
-COPY src/ src/
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       build-essential \
@@ -43,7 +41,6 @@ RUN cmake -DFLB_DEBUG=On \
           -DFLB_OUT_KAFKA=On ..
 
 RUN make -j $(getconf _NPROCESSORS_ONLN)
-RUN install bin/fluent-bit /fluent-bit/bin/
 
 RUN wget https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz
 RUN tar -xvf go${GOLANG_VERSION}.linux-amd64.tar.gz && mv go /usr/local
@@ -51,7 +48,9 @@ RUN tar -xvf go${GOLANG_VERSION}.linux-amd64.tar.gz && mv go /usr/local
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+RUN install bin/fluent-bit /fluent-bit/bin/
 
+COPY ./ /src
 WORKDIR /src
 
 RUN go get code.cloudfoundry.org/go-loggregator \
