@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+set -ex
 
 plugin_dir=$(cd $(dirname ${BASH_SOURCE}) && pwd)
 pushd ${plugin_dir}
